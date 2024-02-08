@@ -28,7 +28,7 @@ defp start(this, :cluster_start) do
 
   # fully-connection
   for i <- 0..(process_num-1) do
-    send addr.seen[i], { :bind, i, addr.seen, addr.list, 10000 }
+    send addr.seen[i], { :bind, i, addr.seen, addr.list, 400000 }
   end
 
   for i <- 0..(process_num-1) do

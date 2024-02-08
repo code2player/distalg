@@ -18,10 +18,7 @@ defmodule Perfect_p2p_links do
       {:pl_send} ->
         if this.remain_broadcasts != 0 do
           for i <- 0..(Kernel.map_size(this.neighbors) - 1) do
-            val = Helper.random(100)
-            if val < 80 do
-              send this.neighbors[i], {:pl_deliver, this.process_id}
-            end
+            send this.neighbors[i], {:pl_deliver, this.process_id}
           end
           send self(), {:pl_send}
           this1 = %{this | remain_broadcasts: this.remain_broadcasts - 1}
@@ -76,7 +73,7 @@ defmodule Client do
       { :bind, process_id, neighbors, recv_list, pl } ->
 
         if process_id == 3 do
-          %{process_id: process_id, neighbors: neighbors, recv_list: recv_list, pl: pl, timeout: 103} |> next()
+          %{process_id: process_id, neighbors: neighbors, recv_list: recv_list, pl: pl, timeout: 101} |> next()
         else
           %{process_id: process_id, neighbors: neighbors, recv_list: recv_list, pl: pl, timeout: 3000 + 50*(process_id+1)} |> next()
         end
@@ -97,7 +94,13 @@ defmodule Client do
       after
         this.timeout -> # Timeout of 0 means no waiting
         if this.process_id == 3 do
+          IO.write("peer#{this.process_id}:   ")
+          for i <- 0..(Kernel.map_size(this.neighbors) - 1) do
+            IO.write("{#{this.recv_list[i]}}  ")
+          end
+          IO.puts ""
           Process.exit(this.pl, :kill)
+          Process.exit(self(), :kill)
         end
           IO.write("peer#{this.process_id}:   ")
           for i <- 0..(Kernel.map_size(this.neighbors) - 1) do
